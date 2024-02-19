@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
+import 'package:super_sliver_list/super_sliver_list.dart';
 import 'package:value_layout_builder/value_layout_builder.dart';
 
 /// A sliver with a [RenderBox] as header and a [RenderSliver] as child.
@@ -203,7 +204,6 @@ class RenderSliverStickyHeader extends RenderSliver with RenderSliverHelpers {
 
       geometry = SliverGeometry(
         scrollExtent: headerExtent + childLayoutGeometry.scrollExtent,
-        maxScrollObstructionExtent: sticky ? headerPaintExtent : 0,
         paintExtent: paintExtent,
         layoutExtent: math.min(
             headerPaintExtent + childLayoutGeometry.layoutExtent, paintExtent),
@@ -215,7 +215,8 @@ class RenderSliverStickyHeader extends RenderSliver with RenderSliverHelpers {
             headerPaintExtent + childLayoutGeometry.paintExtent,
             headerPaintExtent + childLayoutGeometry.hitTestExtent),
         hasVisualOverflow: childLayoutGeometry.hasVisualOverflow,
-      );
+      ).withChildObstructionExtent(ChildObstructionExtent(
+          leading: overlapsContent ? 0 : headerExtent, trailing: 0));
 
       final SliverPhysicalParentData? childParentData =
           child!.parentData as SliverPhysicalParentData?;
@@ -318,7 +319,8 @@ class RenderSliverStickyHeader extends RenderSliver with RenderSliverHelpers {
       final didHitHeader = hitTestBoxChild(
         BoxHitTestResult.wrap(SliverHitTestResult.wrap(result)),
         header!,
-        mainAxisPosition: mainAxisPosition - childMainAxisPosition(header) - headerPosition,
+        mainAxisPosition:
+            mainAxisPosition - childMainAxisPosition(header) - headerPosition,
         crossAxisPosition: crossAxisPosition,
       );
 
